@@ -1,0 +1,45 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        Int      @id @default(autoincrement())
+  name      String
+  email     String   @unique
+  password  String
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+  
+  favoriteMovies FavoriteMovie[]
+
+  @@map("users")
+}
+
+model FavoriteMovie {
+  id           Int      @id @default(autoincrement())
+  userId       Int      @map("user_id")
+  tmdbId       Int      @map("tmdb_id")
+  title        String
+  posterPath   String?  @map("poster_path")
+  overview     String?  @db.Text
+  rating       Float?
+  releaseDate  DateTime? @map("release_date")
+  voteAverage  Float?   @map("vote_average")
+  voteCount    Int?     @map("vote_count")
+  shareUuid    String?  @map("share_uuid") @db.Uuid
+  createdAt    DateTime @default(now()) @map("created_at")
+  updatedAt    DateTime @updatedAt @map("updated_at")
+  
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  @@unique([userId, tmdbId])
+  @@map("favorite_movies")
+}

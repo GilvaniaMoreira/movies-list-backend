@@ -6,16 +6,22 @@ import prisma from './config/database';
 // Load environment variables
 dotenv.config();
 
+// Import routes
+import authRoutes from './routes/authRoutes';
+
 const app = express();
 const PORT = process.env.PORT || 3001;
 
 // Middleware
 app.use(cors({
-  origin: process.env.CORS_ORIGIN || 'http://localhost:3000',
+  origin: process.env.CORS_ORIGIN || 'http://localhost:5173',
   credentials: true,
 }));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+
+// Routes
+app.use('/api/auth', authRoutes);
 
 // Test route
 app.get('/', (_req: Request, res: Response) => {

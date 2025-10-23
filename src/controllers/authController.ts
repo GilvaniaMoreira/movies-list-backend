@@ -2,6 +2,7 @@ import { Request, Response } from 'express';
 import prisma from '../config/database';
 import { hashPassword, comparePassword } from '../utils/password';
 import { generateToken } from '../utils/jwt';
+import crypto from 'crypto';
 
 export const authController = {
   // Register a new user
@@ -28,12 +29,17 @@ export const authController = {
       // Hash password
       const hashedPassword = await hashPassword(password);
 
-      // Create user
+      // Create user with favorite list
       const user = await prisma.user.create({
         data: {
           name,
           email,
           password: hashedPassword,
+          favoriteList: { // Automatically create a favorite list
+            create: {
+              shareToken: crypto.randomBytes(8).toString('hex'), // Generate a unique share token
+            },
+          },
         },
       });
 

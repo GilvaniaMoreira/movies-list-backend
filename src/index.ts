@@ -8,6 +8,7 @@ dotenv.config();
 
 // Import routes
 import authRoutes from './routes/authRoutes';
+import tmdbRoutes from './routes/tmdbRoutes';
 
 const app = express();
 const PORT = process.env.PORT || 3001;
@@ -22,6 +23,7 @@ app.use(express.urlencoded({ extended: true }));
 
 // Routes
 app.use('/api/auth', authRoutes);
+app.use('/api/movies', tmdbRoutes);
 
 // Test route
 app.get('/', (_req: Request, res: Response) => {

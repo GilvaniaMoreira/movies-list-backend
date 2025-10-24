@@ -27,6 +27,15 @@ app.use('/api/auth', authRoutes);
 app.use('/api/movies', tmdbRoutes);
 app.use('/api/favorites', favoriteRoutes);
 
+// Health check endpoint
+app.get('/health', (_req: Request, res: Response) => {
+  res.status(200).json({ 
+    status: 'healthy', 
+    timestamp: new Date().toISOString(),
+    uptime: process.uptime()
+  });
+});
+
 // Test route
 app.get('/', (_req: Request, res: Response) => {
   res.json({ message: 'Movie List API is running!' });

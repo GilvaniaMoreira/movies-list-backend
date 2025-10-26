@@ -11,6 +11,9 @@ API REST desenvolvida em TypeScript para o sistema de lista de filmes com autent
 - **Banco de Dados**: PostgreSQL
 - **Autenticação**: JWT (JSON Web Tokens)
 - **Hash de Senhas**: bcryptjs
+- **Validação**: Zod
+- **Testes**: Vitest + Supertest
+- **Mocking**: vitest-mock-extended + nock
 
 ## Funcionalidades
 
@@ -21,6 +24,36 @@ API REST desenvolvida em TypeScript para o sistema de lista de filmes com autent
 - Listas compartilháveis
 - Autorização baseada em JWT
 - Migrações de banco de dados com Prisma
+- Validação de dados com Zod
+- Suíte completa de testes (unitários e integração)
+- Arquitetura modular e escalável
+
+## Arquitetura do Projeto
+
+O projeto segue uma arquitetura modular baseada em features, organizando o código por domínio de negócio:
+
+```
+src/
+├── config/           # Configurações (env, prisma, logger)
+├── modules/          # Módulos de domínio (feature-based)
+│   ├── auth/         # Autenticação
+│   ├── user/         # Gerenciamento de usuários
+│   ├── favoriteList/ # Lista de favoritos
+│   └── tmdb/         # Integração com TMDB
+├── middlewares/      # Middlewares globais
+├── utils/           # Utilitários compartilhados
+├── types/           # Definições de tipos TypeScript
+├── app.ts           # Configuração do Express
+└── server.ts        # Ponto de entrada da aplicação
+```
+
+### Separação de Responsabilidades
+
+- **Controllers**: Lidam com `req` e `res` do Express
+- **Services**: Contêm a lógica de negócio e chamadas ao Prisma
+- **Schemas**: Validação de dados com Zod
+- **Routes**: Definem endpoints e aplicam middlewares
+- **Types**: Definições TypeScript para cada módulo
 
 ## Pré-requisitos
 
@@ -37,11 +70,6 @@ NODE_ENV=development
 PORT=3001
 
 # Banco de Dados
-DB_HOST=localhost
-DB_PORT=5432
-DB_NAME=movie_list_app
-DB_USER=postgres
-DB_PASSWORD=password
 DATABASE_URL="postgresql://postgres:password@localhost:5432/movie_list_app?schema=public"
 
 # API TMDB
@@ -49,7 +77,7 @@ TMDB_API_KEY=sua_chave_api_tmdb_aqui
 TMDB_BASE_URL=https://api.themoviedb.org/3
 
 # CORS
-CORS_ORIGIN=http://localhost:3000
+CORS_ORIGIN=http://localhost:5173
 
 # JWT
 JWT_SECRET=sua-chave-secreta-jwt-mude-em-producao
@@ -67,6 +95,26 @@ npm run prisma:generate
 
 # Executar migrações do banco de dados
 npm run prisma:migrate:dev
+```
+
+## Scripts Disponíveis
+
+```bash
+# Desenvolvimento
+npm run dev              # Executar em modo desenvolvimento com hot reload
+npm run build            # Compilar TypeScript para JavaScript
+npm start                # Executar aplicação compilada
+
+# Banco de Dados
+npm run prisma:generate  # Gerar cliente Prisma
+npm run prisma:migrate   # Executar migrações (produção)
+npm run prisma:migrate:dev # Criar e aplicar migrações (desenvolvimento)
+npm run prisma:studio    # Abrir interface gráfica do Prisma
+
+# Testes
+npm run test:run         # Executar todos os testes
+npm run test:watch       # Executar testes em modo watch
+npm run test:coverage    # Executar testes com relatório de cobertura
 ```
 
 ## Como Executar
@@ -87,6 +135,55 @@ npm run build
 npm start
 ```
 
+## Testes
+
+O projeto possui uma suíte completa de testes implementada seguindo as melhores práticas:
+
+### Executar Testes
+
+```bash
+# Executar todos os testes
+npm run test:run
+
+# Executar testes em modo watch
+npm run test:watch
+
+# Executar testes com coverage
+npm run test:coverage
+```
+
+### Estrutura dos Testes
+
+```
+tests/
+├── unit/                    # Testes unitários
+│   ├── utils/              # Testes de utilitários
+│   │   ├── jwt.test.ts     # Testes JWT
+│   │   └── hash.test.ts    # Testes de hash
+│   ├── modules/            # Testes de serviços
+│   │   ├── auth.service.test.ts
+│   │   ├── user.service.test.ts
+│   │   └── favoriteList.service.test.ts
+│   └── middlewares/         # Testes de middlewares
+│       └── authMiddleware.test.ts
+└── integration/            # Testes de integração
+    └── api.test.ts         # Testes da API REST
+```
+
+### Tecnologias de Teste
+
+- **Vitest**: Framework de testes moderno e rápido
+- **Supertest**: Testes de integração da API REST
+- **vitest-mock-extended**: Mocks avançados para Prisma
+- **nock**: Mock de chamadas HTTP para TMDB API
+
+### Cobertura de Testes
+
+- ✅ **58 testes** passando
+- ✅ **Cobertura completa** de serviços e middlewares
+- ✅ **Mocks isolados** para dependências externas
+- ✅ **Testes determinísticos** sem dependências externas
+
 ## Endpoints da API
 
 ### Autenticação
@@ -106,11 +203,15 @@ Registrar novo usuário
 **Resposta de sucesso:**
 ```json
 {
-  "token": "jwt_token_aqui",
-  "user": {
-    "id": 1,
-    "name": "João Silva",
-    "email": "joao@exemplo.com"
+  "message": "User registered successfully",
+  "data": {
+    "message": "User registered successfully",
+    "user": {
+      "id": 1,
+      "name": "João Silva",
+      "email": "joao@exemplo.com"
+    },
+    "token": "jwt_token_aqui"
   }
 }
 ```
@@ -129,11 +230,15 @@ Fazer login do usuário
 **Resposta de sucesso:**
 ```json
 {
-  "token": "jwt_token_aqui",
-  "user": {
-    "id": 1,
-    "name": "João Silva",
-    "email": "joao@exemplo.com"
+  "message": "Login successful",
+  "data": {
+    "message": "Login successful",
+    "user": {
+      "id": 1,
+      "name": "João Silva",
+      "email": "joao@exemplo.com"
+    },
+    "token": "jwt_token_aqui"
   }
 }
 ```
@@ -149,10 +254,13 @@ Authorization: Bearer <seu_jwt_token>
 **Resposta de sucesso:**
 ```json
 {
-  "id": 1,
-  "name": "João Silva",
-  "email": "joao@exemplo.com",
-  "created_at": "2024-01-01T00:00:00.000Z"
+  "message": "Profile retrieved successfully",
+  "data": {
+    "id": 1,
+    "name": "João Silva",
+    "email": "joao@exemplo.com",
+    "createdAt": "2024-01-01T00:00:00.000Z"
+  }
 }
 ```
 
@@ -173,19 +281,22 @@ GET /api/movies/search?query=avengers&page=1
 **Resposta:**
 ```json
 {
-  "results": [
-    {
-      "id": 24428,
-      "title": "Os Vingadores",
-      "poster_path": "/path/to/poster.jpg",
-      "overview": "Descrição do filme...",
-      "release_date": "2012-04-25",
-      "vote_average": 7.7,
-      "vote_count": 25000
-    }
-  ],
-  "total_pages": 10,
-  "total_results": 200
+  "message": "Movies found successfully",
+  "data": {
+    "results": [
+      {
+        "id": 24428,
+        "title": "Os Vingadores",
+        "poster_path": "/path/to/poster.jpg",
+        "overview": "Descrição do filme...",
+        "release_date": "2012-04-25",
+        "vote_average": 7.7,
+        "vote_count": 25000
+      }
+    ],
+    "total_pages": 10,
+    "total_results": 200
+  }
 }
 ```
 
@@ -201,18 +312,21 @@ Obter detalhes de um filme específico
 **Resposta:**
 ```json
 {
-  "id": 24428,
-  "title": "Os Vingadores",
-  "overview": "Descrição completa do filme...",
-  "poster_path": "/path/to/poster.jpg",
-  "backdrop_path": "/path/to/backdrop.jpg",
-  "release_date": "2012-04-25",
-  "vote_average": 7.7,
-  "vote_count": 25000,
-  "genres": [
-    {"id": 28, "name": "Ação"},
-    {"id": 12, "name": "Aventura"}
-  ]
+  "message": "Movie details retrieved successfully",
+  "data": {
+    "id": 24428,
+    "title": "Os Vingadores",
+    "overview": "Descrição completa do filme...",
+    "poster_path": "/path/to/poster.jpg",
+    "backdrop_path": "/path/to/backdrop.jpg",
+    "release_date": "2012-04-25",
+    "vote_average": 7.7,
+    "vote_count": 25000,
+    "genres": [
+      {"id": 28, "name": "Ação"},
+      {"id": 12, "name": "Aventura"}
+    ]
+  }
 }
 ```
 
@@ -228,20 +342,25 @@ Authorization: Bearer <seu_jwt_token>
 
 **Resposta:**
 ```json
-[
-  {
-    "id": 1,
-    "tmdb_id": 24428,
-    "title": "Os Vingadores",
-    "poster_path": "/path/to/poster.jpg",
-    "overview": "Descrição do filme...",
-    "rating": 8.5,
-    "release_date": "2012-04-25",
-    "vote_average": 7.7,
-    "vote_count": 25000,
-    "created_at": "2024-01-01T00:00:00.000Z"
+{
+  "message": "Favorites retrieved successfully",
+  "data": {
+    "results": [
+      {
+        "id": 24428,
+        "title": "Os Vingadores",
+        "poster_path": "/path/to/poster.jpg",
+        "overview": "Descrição do filme...",
+        "release_date": "2012-04-25",
+        "vote_average": 7.7,
+        "vote_count": 25000
+      }
+    ],
+    "total_pages": 1,
+    "total_results": 1,
+    "page": 1
   }
-]
+}
 ```
 
 #### POST /api/favorites
@@ -255,29 +374,18 @@ Authorization: Bearer <seu_jwt_token>
 **Corpo da requisição:**
 ```json
 {
-  "tmdb_id": 24428,
-  "title": "Os Vingadores",
-  "poster_path": "/path/to/poster.jpg",
-  "overview": "Descrição do filme...",
-  "rating": 8.5,
-  "release_date": "2012-04-25",
-  "vote_average": 7.7,
-  "vote_count": 25000
+  "tmdbMovieId": 24428
 }
 ```
 
 **Resposta de sucesso:**
 ```json
 {
-  "id": 1,
-  "tmdb_id": 24428,
-  "title": "Os Vingadores",
-  "user_id": 1,
-  "created_at": "2024-01-01T00:00:00.000Z"
+  "message": "Movie added to favorites"
 }
 ```
 
-#### DELETE /api/favorites/:id
+#### DELETE /api/favorites/:tmdbMovieId
 Remover filme dos favoritos
 
 **Headers:**
@@ -288,11 +396,11 @@ Authorization: Bearer <seu_jwt_token>
 **Resposta de sucesso:**
 ```json
 {
-  "message": "Filme removido dos favoritos com sucesso"
+  "message": "Movie removed from favorites"
 }
 ```
 
-#### GET /api/favorites/check/:tmdb_id
+#### GET /api/favorites/check/:tmdbMovieId
 Verificar se filme está nos favoritos
 
 **Headers:**
@@ -303,8 +411,10 @@ Authorization: Bearer <seu_jwt_token>
 **Resposta:**
 ```json
 {
-  "isFavorite": true,
-  "favoriteId": 1
+  "message": "Favorite status checked",
+  "data": {
+    "isFavorite": true
+  }
 }
 ```
 
@@ -319,28 +429,37 @@ Authorization: Bearer <seu_jwt_token>
 **Resposta:**
 ```json
 {
-  "shareUrl": "https://api.exemplo.com/api/favorites/share/abc123-def456",
-  "uuid": "abc123-def456"
+  "message": "Share token generated successfully",
+  "data": {
+    "shareToken": "abc123def456"
+  }
 }
 ```
 
-#### GET /api/favorites/share/:uuid
+#### GET /api/favorites/share/:shareToken
 Obter lista compartilhada (público)
 
 **Resposta:**
 ```json
 {
-  "userName": "João Silva",
-  "movies": [
-    {
-      "title": "Os Vingadores",
-      "poster_path": "/path/to/poster.jpg",
-      "overview": "Descrição do filme...",
-      "rating": 8.5,
-      "release_date": "2012-04-25"
-    }
-  ],
-  "created_at": "2024-01-01T00:00:00.000Z"
+  "message": "Shared list retrieved successfully",
+  "data": {
+    "owner": "João Silva",
+    "results": [
+      {
+        "id": 24428,
+        "title": "Os Vingadores",
+        "poster_path": "/path/to/poster.jpg",
+        "overview": "Descrição do filme...",
+        "release_date": "2012-04-25",
+        "vote_average": 7.7,
+        "vote_count": 25000
+      }
+    ],
+    "page": 1,
+    "total_pages": 1,
+    "total_results": 1
+  }
 }
 ```
 

@@ -28,33 +28,6 @@ API REST desenvolvida em TypeScript para o sistema de lista de filmes com autent
 - Suíte completa de testes (unitários e integração)
 - Arquitetura modular e escalável
 
-## Arquitetura do Projeto
-
-O projeto segue uma arquitetura modular baseada em features, organizando o código por domínio de negócio:
-
-```
-src/
-├── config/           # Configurações (env, prisma, logger)
-├── modules/          # Módulos de domínio (feature-based)
-│   ├── auth/         # Autenticação
-│   ├── user/         # Gerenciamento de usuários
-│   ├── favoriteList/ # Lista de favoritos
-│   └── tmdb/         # Integração com TMDB
-├── middlewares/      # Middlewares globais
-├── utils/           # Utilitários compartilhados
-├── types/           # Definições de tipos TypeScript
-├── app.ts           # Configuração do Express
-└── server.ts        # Ponto de entrada da aplicação
-```
-
-### Separação de Responsabilidades
-
-- **Controllers**: Lidam com `req` e `res` do Express
-- **Services**: Contêm a lógica de negócio e chamadas ao Prisma
-- **Schemas**: Validação de dados com Zod
-- **Routes**: Definem endpoints e aplicam middlewares
-- **Types**: Definições TypeScript para cada módulo
-
 ## Pré-requisitos
 
 - Node.js 20 ou superior
@@ -151,38 +124,6 @@ npm run test:watch
 # Executar testes com coverage
 npm run test:coverage
 ```
-
-### Estrutura dos Testes
-
-```
-tests/
-├── unit/                    # Testes unitários
-│   ├── utils/              # Testes de utilitários
-│   │   ├── jwt.test.ts     # Testes JWT
-│   │   └── hash.test.ts    # Testes de hash
-│   ├── modules/            # Testes de serviços
-│   │   ├── auth.service.test.ts
-│   │   ├── user.service.test.ts
-│   │   └── favoriteList.service.test.ts
-│   └── middlewares/         # Testes de middlewares
-│       └── authMiddleware.test.ts
-└── integration/            # Testes de integração
-    └── api.test.ts         # Testes da API REST
-```
-
-### Tecnologias de Teste
-
-- **Vitest**: Framework de testes moderno e rápido
-- **Supertest**: Testes de integração da API REST
-- **vitest-mock-extended**: Mocks avançados para Prisma
-- **nock**: Mock de chamadas HTTP para TMDB API
-
-### Cobertura de Testes
-
-- ✅ **58 testes** passando
-- ✅ **Cobertura completa** de serviços e middlewares
-- ✅ **Mocks isolados** para dependências externas
-- ✅ **Testes determinísticos** sem dependências externas
 
 ## Endpoints da API
 
@@ -507,3 +448,13 @@ docker build -t movie-list-backend .
 docker run -p 3001:3001 --env-file .env movie-list-backend
 ```
 
+## Contribuição
+
+Para contribuir com o projeto:
+
+1. Faça um fork do repositório
+2. Crie uma branch para sua feature (`git checkout -b feature/nova-feature`)
+3. Execute os testes (`npm run test:run`)
+4. Commit suas mudanças (`git commit -am 'Adiciona nova feature'`)
+5. Push para a branch (`git push origin feature/nova-feature`)
+6. Abra um Pull Request

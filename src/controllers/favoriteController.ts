@@ -15,24 +15,48 @@ export const favoriteController = {
         return;
       }
 
+      const { page = 1, limit = 20 } = req.query;
+      const pageNum = parseInt(page as string);
+      const limitNum = parseInt(limit as string);
+      const skip = (pageNum - 1) * limitNum;
+
       const favoriteList = await prisma.favoriteList.findUnique({
         where: { userId: req.user.id },
         include: {
           movies: {
             orderBy: { addedAt: 'desc' },
+            skip: skip,
+            take: limitNum,
           },
         },
       });
 
       if (!favoriteList) {
-        res.json([]); // User has no favorite list yet, return empty array
+        res.json({
+          results: [],
+          total_pages: 0,
+          total_results: 0,
+          page: pageNum,
+        });
         return;
       }
+
+      // Get total count for pagination
+      const totalCount = await prisma.favoriteListMovie.count({
+        where: { favoriteListId: favoriteList.id },
+      });
+
+      const totalPages = Math.ceil(totalCount / limitNum);
 
       const tmdbMovieIds = favoriteList.movies.map(fm => fm.tmdbMovieId);
 
       if (tmdbMovieIds.length === 0) {
-        res.json([]);
+        res.json({
+          results: [],
+          total_pages: totalPages,
+          total_results: totalCount,
+          page: pageNum,
+        });
         return;
       }
 
@@ -62,7 +86,12 @@ export const favoriteController = {
 
       const movies = (await Promise.all(movieDetailsPromises)).filter(Boolean); // Filter out nulls
 
-      res.json(movies);
+      res.json({
+        results: movies,
+        total_pages: totalPages,
+        total_results: totalCount,
+        page: pageNum,
+      });
     } catch (error) {
       console.error('Error getting favorites:', error);
       res.status(500).json({ error: 'Internal server error' });

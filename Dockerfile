@@ -54,6 +54,12 @@ RUN npx prisma generate
 # Copy built application from builder stage
 COPY --from=builder /app/dist ./dist
 
+# Copy start script
+COPY start.sh ./
+
+# Make start script executable
+RUN chmod +x start.sh
+
 # Change ownership of the app directory to nodejs user
 RUN chown -R nodejs:nodejs /app
 
@@ -71,4 +77,4 @@ HEALTHCHECK --interval=30s --timeout=10s --start-period=40s --retries=3 \
 ENTRYPOINT ["dumb-init", "--"]
 
 # Start the application
-CMD ["node", "dist/index.js"]
+CMD ["./start.sh"]

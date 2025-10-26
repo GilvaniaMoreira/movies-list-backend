@@ -21,6 +21,8 @@ RUN npx prisma generate
 # Copy source code
 COPY src ./src
 
+ARG CORS_ORIGIN
+
 # Build TypeScript code
 RUN npm run build
 

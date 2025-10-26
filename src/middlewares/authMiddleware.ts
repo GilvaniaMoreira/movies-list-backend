@@ -1,12 +1,8 @@
 import { Request, Response, NextFunction } from 'express';
-import jwt from 'jsonwebtoken';
+import { verifyToken } from '../utils/jwt';
+import { logger } from '../config/logger';
 
-interface JwtPayload {
-  id: number;
-  email: string;
-}
-
-export const authenticateToken = (req: Request, res: Response, next: NextFunction): void => {
+export const authMiddleware = (req: Request, res: Response, next: NextFunction): void => {
   try {
     const authHeader = req.headers['authorization'];
     const token = authHeader && authHeader.split(' ')[1];
@@ -16,12 +12,7 @@ export const authenticateToken = (req: Request, res: Response, next: NextFunctio
       return;
     }
 
-    const secret = process.env.JWT_SECRET;
-    if (!secret) {
-      throw new Error('JWT_SECRET is not defined');
-    }
-
-    const decoded = jwt.verify(token, secret) as JwtPayload;
+    const decoded = verifyToken(token);
     req.user = {
       id: decoded.id,
       email: decoded.email,
@@ -29,7 +20,7 @@ export const authenticateToken = (req: Request, res: Response, next: NextFunctio
 
     next();
   } catch (error) {
+    logger.error('Authentication error:', error);
     res.status(403).json({ error: 'Invalid or expired token' });
   }
 };
-

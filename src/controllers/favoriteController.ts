@@ -238,6 +238,9 @@ export const favoriteController = {
   getSharedList: async (req: Request, res: Response): Promise<void> => {
     try {
       const { shareToken } = req.params;
+      const page = parseInt(req.query.page as string) || 1;
+      const limit = parseInt(req.query.limit as string) || 10;
+      const skip = (page - 1) * limit;
 
       const favoriteList = await prisma.favoriteList.findUnique({
         where: { shareToken },
@@ -247,6 +250,8 @@ export const favoriteController = {
           },
           movies: {
             orderBy: { addedAt: 'desc' },
+            skip: skip,
+            take: limit,
           },
         },
       });
@@ -256,10 +261,23 @@ export const favoriteController = {
         return;
       }
 
+      // Get total count
+      const totalCount = await prisma.favoriteListMovie.count({
+        where: { favoriteListId: favoriteList.id },
+      });
+
+      const totalPages = Math.ceil(totalCount / limit);
+
       const tmdbMovieIds = favoriteList.movies.map(fm => fm.tmdbMovieId);
 
       if (tmdbMovieIds.length === 0) {
-        res.json({ owner: favoriteList.user.name, movies: [] });
+        res.json({ 
+          owner: favoriteList.user.name, 
+          results: [], 
+          page, 
+          total_pages: totalPages, 
+          total_results: totalCount 
+        });
         return;
       }
 
@@ -291,7 +309,10 @@ export const favoriteController = {
 
       res.json({
         owner: favoriteList.user.name,
-        movies,
+        results: movies,
+        page,
+        total_pages: totalPages,
+        total_results: totalCount,
       });
     } catch (error) {
       console.error('Error getting shared list:', error);

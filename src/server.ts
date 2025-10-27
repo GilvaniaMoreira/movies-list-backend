@@ -5,11 +5,11 @@ import { logger } from './config/logger';
 
 const startServer = async () => {
   try {
-    // Test database connection
+    // Testar conexão com o banco de dados
     await prisma.$connect();
     logger.info('Database connection established successfully.');
 
-    // Start server
+    // Iniciar servidor
     app.listen(env.PORT, () => {
       logger.info(`Server is running on port ${env.PORT}`);
       logger.info(`API available at http://localhost:${env.PORT}`);
@@ -20,7 +20,7 @@ const startServer = async () => {
   }
 };
 
-// Handle graceful shutdown
+// Lidar com encerramento gracioso
 process.on('SIGINT', async () => {
   logger.info('Received SIGINT, shutting down gracefully...');
   await prisma.$disconnect();

@@ -1,13 +1,13 @@
 import dotenv from 'dotenv';
 
-// Load environment variables
+// Carregar variáveis de ambiente
 dotenv.config();
 
 export const env = {
   NODE_ENV: process.env.NODE_ENV || 'development',
   PORT: parseInt(process.env.PORT || '3001'),
   
-  // Database
+  // Banco de dados
   DATABASE_URL: process.env.DATABASE_URL!,
   
   // JWT
@@ -17,12 +17,12 @@ export const env = {
   // CORS
   CORS_ORIGIN: process.env.CORS_ORIGIN || 'http://localhost:5173',
   
-  // TMDB API
+  // API TMDB
   TMDB_API_KEY: process.env.TMDB_API_KEY!,
   TMDB_BASE_URL: process.env.TMDB_BASE_URL || 'https://api.themoviedb.org/3',
 } as const;
 
-// Validate required environment variables
+// Validar variáveis de ambiente obrigatórias
 const requiredEnvVars = ['DATABASE_URL', 'JWT_SECRET', 'TMDB_API_KEY'] as const;
 
 for (const envVar of requiredEnvVars) {

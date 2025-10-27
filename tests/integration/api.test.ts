@@ -6,7 +6,7 @@ import { generateToken, verifyToken } from '../../src/utils/jwt';
 import prisma from '../../src/config/prisma';
 import nock from 'nock';
 
-// Mock dos utils
+// Mock de utils
 vi.mock('../../src/utils/hash');
 vi.mock('../../src/utils/jwt');
 
@@ -123,12 +123,12 @@ describe('API Integration Tests', () => {
         createdAt: new Date(),
       };
 
-      // Mock do Prisma
+      // Mock de Prisma
       vi.mocked(prisma.user.findUnique).mockResolvedValue(null);
       vi.mocked(prisma.user.create).mockResolvedValue(mockUser);
       vi.mocked(prisma.favoriteList.create).mockResolvedValue(mockFavoriteList);
 
-      // Mock dos utils
+      // Mock de utils
       mockHashPassword.mockResolvedValue('hashedpassword');
       mockGenerateToken.mockReturnValue('jwt-token');
 
@@ -198,10 +198,10 @@ describe('API Integration Tests', () => {
         updatedAt: new Date(),
       };
 
-      // Mock do JWT
+      // Mock de JWT
       mockVerifyToken.mockReturnValue({ id: 1, email: 'test@example.com' });
 
-      // Mock do Prisma
+      // Mock de Prisma
       vi.mocked(prisma.user.findUnique).mockResolvedValue(mockUser);
 
       const response = await request(app)
@@ -237,17 +237,17 @@ describe('API Integration Tests', () => {
         },
       ];
 
-      // Mock do JWT
+      // Mock de JWT
       mockVerifyToken.mockReturnValue({ id: 1, email: 'test@example.com' });
 
-      // Mock do Prisma
+      // Mock de Prisma
       vi.mocked(prisma.favoriteList.findUnique).mockResolvedValue({
         ...mockFavoriteList,
         movies: mockFavoriteMovies,
       });
       vi.mocked(prisma.favoriteListMovie.count).mockResolvedValue(1);
 
-      // Mock TMDB API
+      // Mock de API TMDB
       nock('https://api.themoviedb.org')
         .get('/3/movie/550')
         .query(true)
@@ -281,10 +281,10 @@ describe('API Integration Tests', () => {
         createdAt: new Date(),
       };
 
-      // Mock do JWT
+      // Mock de JWT
       mockVerifyToken.mockReturnValue({ id: 1, email: 'test@example.com' });
 
-      // Mock do Prisma
+      // Mock de Prisma
       vi.mocked(prisma.favoriteList.findUnique).mockResolvedValue(mockFavoriteList);
       vi.mocked(prisma.favoriteListMovie.findUnique).mockResolvedValue(null);
       vi.mocked(prisma.favoriteListMovie.create).mockResolvedValue({
@@ -294,7 +294,7 @@ describe('API Integration Tests', () => {
         addedAt: new Date(),
       });
 
-      // Mock TMDB API
+      // Mock de API TMDB
       nock('https://api.themoviedb.org')
         .get('/3/movie/550')
         .query(true)

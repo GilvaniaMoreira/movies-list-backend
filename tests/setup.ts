@@ -1,7 +1,7 @@
 import { beforeAll, afterAll, afterEach, beforeEach, vi } from 'vitest';
 import nock from 'nock';
 
-// Mock das variáveis de ambiente
+// Mock de variáveis de ambiente
 process.env.JWT_SECRET = 'test-secret-key';
 process.env.JWT_EXPIRES_IN = '1h';
 process.env.TMDB_API_KEY = 'test-api-key';

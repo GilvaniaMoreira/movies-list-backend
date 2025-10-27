@@ -9,7 +9,7 @@ describe('authMiddleware', () => {
   let mockResponse: Partial<Response>;
   let mockNext: NextFunction;
 
-  // Mock jwtUtils.verifyToken
+  // Mock de jwtUtils.verifyToken
   const mockVerifyToken = vi.spyOn(jwtUtils, 'verifyToken');
 
   beforeEach(() => {

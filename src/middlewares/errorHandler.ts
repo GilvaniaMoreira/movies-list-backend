@@ -4,7 +4,7 @@ import { logger } from '../config/logger';
 export const errorHandler = (err: Error, _req: Request, res: Response, _next: NextFunction): void => {
   logger.error('Unhandled error:', err);
   
-  // Don't leak error details in production
+  // Não vazar detalhes do erro em produção
   const message = process.env.NODE_ENV === 'production' 
     ? 'Something went wrong!' 
     : err.message;

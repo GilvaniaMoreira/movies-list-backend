@@ -7,11 +7,11 @@ import { registerSchema, loginSchema } from './auth.schema';
 const router = express.Router();
 const authController = new AuthController();
 
-// Public routes
+// Rotas públicas
 router.post('/register', validateSchema(registerSchema), authController.register.bind(authController));
 router.post('/login', validateSchema(loginSchema), authController.login.bind(authController));
 
-// Protected routes
+// Rotas protegidas
 router.get('/profile', authMiddleware, authController.getProfile.bind(authController));
 
 export default router;

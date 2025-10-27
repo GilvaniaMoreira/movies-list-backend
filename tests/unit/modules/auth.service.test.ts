@@ -4,7 +4,7 @@ import { hashPassword, comparePassword } from '../../../src/utils/hash';
 import { generateToken } from '../../../src/utils/jwt';
 import prisma from '../../../src/config/prisma';
 
-// Mock dos utils
+// Mock de utils
 vi.mock('../../../src/utils/hash');
 vi.mock('../../../src/utils/jwt');
 
@@ -44,11 +44,11 @@ describe('AuthService', () => {
         createdAt: new Date(),
       };
 
-      // Mock do Prisma
+      // Mock de Prisma
       vi.mocked(prisma.user.findUnique).mockResolvedValue(null);
       vi.mocked(prisma.user.create).mockResolvedValue(mockUser);
 
-      // Mock dos utils
+      // Mock de utils
       mockHashPassword.mockResolvedValue('hashedpassword');
       mockGenerateToken.mockReturnValue('jwt-token');
 

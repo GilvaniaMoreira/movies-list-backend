@@ -4,13 +4,13 @@ import { TMDBController } from './tmdb.controller';
 const router = express.Router();
 const tmdbController = new TMDBController();
 
-// Search movies
+// Buscar filmes
 router.get('/search', tmdbController.searchMovies.bind(tmdbController));
 
-// Get popular movies
+// Obter filmes populares
 router.get('/popular', tmdbController.getPopularMovies.bind(tmdbController));
 
-// Get movie details
+// Obter detalhes do filme
 router.get('/:id', tmdbController.getMovieDetails.bind(tmdbController));
 
 export default router;

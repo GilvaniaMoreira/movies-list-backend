@@ -9,7 +9,7 @@ export class AuthService {
   async register(data: RegisterInput): Promise<AuthResponse> {
     const { name, email, password } = data;
 
-    // Check if user already exists
+    // Verificar se o usuário já existe
     const existingUser = await prisma.user.findUnique({
       where: { email },
     });
@@ -18,10 +18,10 @@ export class AuthService {
       throw new Error('User with this email already exists');
     }
 
-    // Hash password
+    // Fazer hash da senha
     const hashedPassword = await hashPassword(password);
 
-    // Create user with favorite list
+    // Criar usuário com lista de favoritos
     const user = await prisma.user.create({
       data: {
         name,
@@ -35,7 +35,7 @@ export class AuthService {
       },
     });
 
-    // Generate token
+    // Gerar token
     const token = generateToken({ id: user.id, email: user.email });
 
     return {
@@ -52,7 +52,7 @@ export class AuthService {
   async login(data: LoginInput): Promise<AuthResponse> {
     const { email, password } = data;
 
-    // Find user
+    // Buscar usuário
     const user = await prisma.user.findUnique({
       where: { email },
     });
@@ -61,14 +61,14 @@ export class AuthService {
       throw new Error('Invalid credentials');
     }
 
-    // Verify password
+    // Verificar senha
     const isPasswordValid = await comparePassword(password, user.password);
 
     if (!isPasswordValid) {
       throw new Error('Invalid credentials');
     }
 
-    // Generate token
+    // Gerar token
     const token = generateToken({ id: user.id, email: user.email });
 
     return {
@@ -82,6 +82,7 @@ export class AuthService {
     };
   }
 
+  // Buscar perfil do usuário
   async getProfile(userId: number): Promise<ProfileResponse> {
     const user = await prisma.user.findUnique({
       where: { id: userId },

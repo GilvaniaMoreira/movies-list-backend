@@ -23,7 +23,7 @@ export class UserService {
   }
 
   async updateProfile(userId: number, data: UpdateProfileInput): Promise<UpdateProfileResponse> {
-    // Check if email is being updated and if it already exists
+    // Verificar se o email está sendo atualizado e se já existe
     if (data.email) {
       const existingUser = await prisma.user.findUnique({
         where: { email: data.email },

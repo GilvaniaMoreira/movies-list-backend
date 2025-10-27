@@ -2,7 +2,7 @@
 
 API REST desenvolvida em TypeScript para o sistema de lista de filmes com autenticação de usuários e gerenciamento de filmes favoritos.
 
-## 🌐 Deploy
+## Deploy
 
 - **Backend em Produção**: [https://movies-list-backend-production.up.railway.app/](https://movies-list-backend-production.up.railway.app/)
 
